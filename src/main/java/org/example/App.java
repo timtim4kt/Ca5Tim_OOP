@@ -81,6 +81,7 @@ public class App
                         playerManager.displayAllPlayers();
                         break;
                     case RETRIEVE_OBJECT_BY_HASH_KEY:
+
                           HashMap();
                         break;
                     case X1:
@@ -127,8 +128,26 @@ public class App
 
     if(player != null)
     {
-        System.out.println(key + " favourite player is: " + player);
+     System.out.println();
+     System.out.println("                                     *  *  *  *  *  *  *  *  *");
+     System.out.println("                                     *    Player of key " + key +"    *");
+     System.out.println("                                     *  *  *  *  *  *  *  *  *");
+     System.out.println();
+     System.out.println("Name                    Country       DOB          Weight      Height      Appearances    Goals");
+     System.out.println("====================    ===========   ==========   ========    ========    ===========    =============");
+
+System.out.printf("%-24s%-14s%-13s%-12s%-12s%-15s%-1s\n",
+    player.getName(),
+    player.getCountry(),
+    player.getDob(),
+    player.getWeightKilograms(),
+    player.getHeightMetres(),
+    player.getCareerAppearances(),
+    player.getCareerGoals()
+            ); 
+
     }else{
+        System.out.println();
         System.out.println("The key: " + key + " could not be found.");
     }
 
