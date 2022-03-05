@@ -3,9 +3,10 @@ package org.example;
 import java.time.LocalDate;
 import java.util.*;
 
-public class App 
-{
+public class App {
     PlayerManager playerManager;
+    private static final PlayerNameComparator playerNameComparator = new PlayerNameComparator();
+
 
     static Player CR = new Player("Cristiano Ronaldo", "Portugal", LocalDate.of(1985, 2, 5), 85, 1.87, 1000, 805);
     static Player LM = new Player("Lionel Messi", "Argentina", LocalDate.of(1987, 6, 24), 67, 1.69, 900, 736);
@@ -18,22 +19,21 @@ public class App
     static Player RM = new Player("Riyad Mahrez", "Algeria", LocalDate.of(1994, 4, 9), 70, 1.83, 500, 200);
     static Player JV = new Player("Jamie Vardy", "England", LocalDate.of(1992, 2, 14), 67, 1.81, 400, 300);
 
-    public static void main( String[] args )
-    {
+    public static void main(String[] args) {
         App app = new App();
         app.start();
     }
 
-    public void start(){
+    public void start() {
 
         ArrayList<Player> playerList = new ArrayList<>();
         Map<Integer, Player> playerMap = new HashMap<>();
-        initialize(playerList,playerMap);
-        playerManager = new PlayerManager(playerList,playerManager);
+        initialize(playerList, playerMap);
+        playerManager = new PlayerManager(playerList, playerManager);
         displayMainMenu();
     }
 
-    private void initialize(List list,Map<Integer, Player> playerMap) {
+    private void initialize(List list, Map<Integer, Player> playerMap) {
 
         list.add(CR);
         list.add(LM);
@@ -47,45 +47,44 @@ public class App
         list.add(JV);
 
 
-
     }
-    private void displayMainMenu()
-    {
+
+    private void displayMainMenu() {
 
         final String MENU_ITEMS = "\n*** MAIN MENU OF OPTIONS ***\n"
                 + "1. Display All Players\n"
-                + "2. HashMap\n"
-                + "3. X\n"
+                + "2. HashMap Key\n"
+                + "3. TreeMap Key\n"
                 + "4. Exit\n"
                 + "Enter Option [1,4]";
 
         final int DISPLAY = 1;
         final int RETRIEVE_OBJECT_BY_HASH_KEY = 2;
-        final int X1 = 3;
+        final int RETRIEVE_OBJECT_BY_TREE_KEY = 3;
         final int EXIT = 4;
 
         Scanner keyboard = new Scanner(System.in);
         int option = 0;
-        do
-        {
+        do {
             System.out.println("\n" + MENU_ITEMS);
-            try
-            {
+            try {
                 String usersInput = keyboard.nextLine();
                 option = Integer.parseInt(usersInput);
-                switch (option)
-                {
+                switch (option) {
                     case DISPLAY:
                         System.out.println("All Players");
                         System.out.println("===========");
                         playerManager.displayAllPlayers();
                         break;
                     case RETRIEVE_OBJECT_BY_HASH_KEY:
-
-                          HashMap();
+                        System.out.println("Hashmap Option Chosen");
+                        System.out.println("=====================");
+                        HashMap();
                         break;
-                    case X1:
-                        System.out.println("X1 option chosen");
+                    case RETRIEVE_OBJECT_BY_TREE_KEY:
+                        System.out.println("Treemap option chosen");
+                        System.out.println("=====================");
+                        TreeMap();
                         break;
                     case EXIT:
                         System.out.println("Exit Menu option chosen");
@@ -95,8 +94,7 @@ public class App
                         break;
                 }
 
-            } catch (InputMismatchException | NumberFormatException e)
-            {
+            } catch (InputMismatchException | NumberFormatException e) {
                 System.out.print("Invalid input - please enter number in range");
             }
         } while (option != EXIT);
@@ -105,8 +103,7 @@ public class App
 
     }
 
-    public static void HashMap()
-    {
+    public static void HashMap() {
         Map<Integer, Player> playerMap = new HashMap<>();
 
         playerMap.put(1, CR);
@@ -126,31 +123,65 @@ public class App
         int key = kb.nextInt();
         Player player = playerMap.get(key);
 
-    if(player != null)
-    {
-     System.out.println();
-     System.out.println("                                     *  *  *  *  *  *  *  *  *");
-     System.out.println("                                     *    Player of key " + key +"    *");
-     System.out.println("                                     *  *  *  *  *  *  *  *  *");
-     System.out.println();
-     System.out.println("Name                    Country       DOB          Weight      Height      Appearances    Goals");
-     System.out.println("====================    ===========   ==========   ========    ========    ===========    =============");
+        if (player != null) {
+            System.out.println();
+            System.out.println("                                     *  *  *  *  *  *  *  *  *");
+            System.out.println("                                     *    Player of key " + key + "    *");
+            System.out.println("                                     *  *  *  *  *  *  *  *  *");
+            System.out.println();
+            System.out.println("Name                    Country       DOB          Weight      Height      Appearances    Goals");
+            System.out.println("====================    ===========   ==========   ========    ========    ===========    =============");
 
-System.out.printf("%-24s%-14s%-13s%-12s%-12s%-15s%-1s\n",
-    player.getName(),
-    player.getCountry(),
-    player.getDob(),
-    player.getWeightKilograms(),
-    player.getHeightMetres(),
-    player.getCareerAppearances(),
-    player.getCareerGoals()
-            ); 
+            System.out.printf("%-24s%-14s%-13s%-12s%-12s%-15s%-1s\n",
+                    player.getName(),
+                    player.getCountry(),
+                    player.getDob(),
+                    player.getWeightKilograms(),
+                    player.getHeightMetres(),
+                    player.getCareerAppearances(),
+                    player.getCareerGoals()
+            );
 
-    }else{
-        System.out.println();
-        System.out.println("The key: " + key + " could not be found.");
+        } else {
+            System.out.println();
+            System.out.println("The key: " + key + " could not be found.");
+        }
+
+
     }
 
 
+    public static void TreeMap() {
+        Map<Long, Player> playerTree = new TreeMap<>();
+
+        playerTree.put(10L,CR);
+        playerTree.put(9L,LM);
+        playerTree.put(8L,NJ);
+        playerTree.put(7L,LS);
+        playerTree.put(6L,VJ);
+        playerTree.put(5L,PF);
+        playerTree.put(4L,MM);
+        playerTree.put(3L,MS);
+        playerTree.put(2L,RM);
+        playerTree.put(1L,JV);
+
+        Set<Long> keySet = playerTree.keySet();
+
+        System.out.println("Key   Name                    Country       DOB          Weight      Height      Appearances    Goals");
+        System.out.println("===   ====================    ===========   ==========   ========    ========    ===========    =============");
+
+        for (Long key : keySet) {
+            Player player = playerTree.get(key);
+            System.out.printf("%-6s%-24s%-14s%-13s%-12s%-12s%-15s%-1s\n",
+                    key,
+                    player.getName(),
+                    player.getCountry(),
+                    player.getDob(),
+                    player.getWeightKilograms(),
+                    player.getHeightMetres(),
+                    player.getCareerAppearances(),
+                    player.getCareerGoals()
+            );
+        }
     }
-}
+  }
