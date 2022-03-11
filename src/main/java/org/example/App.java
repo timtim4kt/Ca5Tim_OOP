@@ -4,13 +4,15 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class App {
+    ArrayList<Player> playerList = new ArrayList<>();
+    Map<Integer, Player> playerMap = new HashMap<>();
+    Map<Long, Player> playerTree = new TreeMap<>();
     PlayerManager playerManager;
     private static final PlayerNameComparator playerNameComparator = new PlayerNameComparator();
 
-
     static Player CR = new Player("Cristiano Ronaldo", "Portugal", LocalDate.of(1985, 2, 5), 85, 1.87, 1000, 805);
     static Player LM = new Player("Lionel Messi", "Argentina", LocalDate.of(1987, 6, 24), 67, 1.69, 900, 736);
-    static Player NJ = new Player("Neymar Jr", "Brazil", LocalDate.of(1992, 2, 5), 68, 1.75, 600, 805);
+    static Player NJ = new Player("Neymar Jr", "Brazil", LocalDate.of(1992, 2, 5), 68, 1.75, 600, 450);
     static Player LS = new Player("Luis Suarez", "Uruguay", LocalDate.of(1990, 7, 11), 73, 1.77, 700, 600);
     static Player VJ = new Player("Vinicius Jr", "Brazil", LocalDate.of(2001, 2, 9), 65, 1.80, 130, 40);
     static Player PF = new Player("Phil Foden", "England", LocalDate.of(2000, 3, 14), 62, 1.74, 120, 60);
@@ -25,16 +27,14 @@ public class App {
     }
 
     public void start() {
-
-        ArrayList<Player> playerList = new ArrayList<>();
-        Map<Integer, Player> playerMap = new HashMap<>();
-        initialize(playerList, playerMap);
-        playerManager = new PlayerManager(playerList, playerManager);
+        initializeArrayList(playerList);
+        initializeHashmap(playerList,playerMap);
+        initializeTreeMap(playerList,playerTree);
+        playerManager = new PlayerManager(playerList);
         displayMainMenu();
     }
 
-    private void initialize(List list, Map<Integer, Player> playerMap) {
-
+    private void initializeArrayList(List list) {
         list.add(CR);
         list.add(LM);
         list.add(NJ);
@@ -45,16 +45,25 @@ public class App {
         list.add(MS);
         list.add(RM);
         list.add(JV);
+    }
 
+    public void initializeHashmap(List list,Map<Integer, Player> map) {
+        for(int i = 0;i < list.size();i++) {
+            map.put(i + 1, (Player) list.get(i));
+        }
+    }
 
+    public void initializeTreeMap(List list,Map<Long, Player> tree) {
+        for(int i = 0;i < list.size();i++) {
+            tree.put((long) (list.size() - i), (Player) list.get(i));
+        }
     }
 
     private void displayMainMenu() {
-
         final String MENU_ITEMS = "\n*** MAIN MENU OF OPTIONS ***\n"
                 + "1. Display All Players\n"
-                + "2. HashMap Key\n"
-                + "3. TreeMap Key\n"
+                + "2. Find Player by Hash Key\n"
+                + "3. Display Player Tree\n"
                 + "4. Exit\n"
                 + "Enter Option [1,4]";
 
@@ -79,12 +88,12 @@ public class App {
                     case RETRIEVE_OBJECT_BY_HASH_KEY:
                         System.out.println("Hashmap Option Chosen");
                         System.out.println("=====================");
-                        HashMap();
+                        playerManager.getByHashKey(playerMap);
                         break;
                     case RETRIEVE_OBJECT_BY_TREE_KEY:
                         System.out.println("Treemap option chosen");
                         System.out.println("=====================");
-                        TreeMap();
+                        playerManager.displayPlayerTree(playerTree);
                         break;
                     case EXIT:
                         System.out.println("Exit Menu option chosen");
@@ -98,90 +107,6 @@ public class App {
                 System.out.print("Invalid input - please enter number in range");
             }
         } while (option != EXIT);
-
         System.out.println("\nExiting Main Menu, goodbye.");
-
-    }
-
-    public static void HashMap() {
-        Map<Integer, Player> playerMap = new HashMap<>();
-
-        playerMap.put(1, CR);
-        playerMap.put(2, LM);
-        playerMap.put(3, NJ);
-        playerMap.put(4, LS);
-        playerMap.put(5, VJ);
-        playerMap.put(6, PF);
-        playerMap.put(7, MM);
-        playerMap.put(8, MS);
-        playerMap.put(9, RM);
-        playerMap.put(10, JV);
-
-        System.out.println("");
-        Scanner kb = new Scanner(System.in);
-        System.out.println("Enter a Key(1-10) to search for a player. Type 0 to exit");
-        int key = kb.nextInt();
-        Player player = playerMap.get(key);
-
-        if (player != null) {
-            System.out.println();
-            System.out.println("                                     *  *  *  *  *  *  *  *  *");
-            System.out.println("                                     *    Player of key " + key + "    *");
-            System.out.println("                                     *  *  *  *  *  *  *  *  *");
-            System.out.println();
-            System.out.println("Name                    Country       DOB          Weight      Height      Appearances    Goals");
-            System.out.println("====================    ===========   ==========   ========    ========    ===========    =============");
-
-            System.out.printf("%-24s%-14s%-13s%-12s%-12s%-15s%-1s\n",
-                    player.getName(),
-                    player.getCountry(),
-                    player.getDob(),
-                    player.getWeightKilograms(),
-                    player.getHeightMetres(),
-                    player.getCareerAppearances(),
-                    player.getCareerGoals()
-            );
-
-        } else {
-            System.out.println();
-            System.out.println("The key: " + key + " could not be found.");
-        }
-
-
-    }
-
-
-    public static void TreeMap() {
-        Map<Long, Player> playerTree = new TreeMap<>();
-
-        playerTree.put(10L,CR);
-        playerTree.put(9L,LM);
-        playerTree.put(8L,NJ);
-        playerTree.put(7L,LS);
-        playerTree.put(6L,VJ);
-        playerTree.put(5L,PF);
-        playerTree.put(4L,MM);
-        playerTree.put(3L,MS);
-        playerTree.put(2L,RM);
-        playerTree.put(1L,JV);
-
-        Set<Long> keySet = playerTree.keySet();
-
-        System.out.println("Key   Name                    Country       DOB          Weight      Height      Appearances    Goals");
-        System.out.println("===   ====================    ===========   ==========   ========    ========    ===========    =============");
-
-        for (Long key : keySet) {
-            Player player = playerTree.get(key);
-            System.out.printf("%-6s%-24s%-14s%-13s%-12s%-12s%-15s%-1s\n",
-                    key,
-                    player.getName(),
-                    player.getCountry(),
-                    player.getDob(),
-                    player.getWeightKilograms(),
-                    player.getHeightMetres(),
-                    player.getCareerAppearances(),
-                    player.getCareerGoals()
-            );
-        }
     }
   }
