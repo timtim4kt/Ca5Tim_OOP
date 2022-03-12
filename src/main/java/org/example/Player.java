@@ -3,9 +3,36 @@ package org.example;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class Player {
+public class Player implements Comparable<Player>{
+
+
     public String getName() {
         return name;
+    }
+
+    @Override
+    public int compareTo(Player p)
+    {
+        double x = (this.weightKilograms);
+        double y = (p.weightKilograms);
+
+        boolean weightKG = x == y;
+
+        if (weightKG)
+        {
+            return 0;
+        }
+        else
+        {
+            if (x - y > 0)
+            {
+                return -1;
+            }
+            else
+            {
+                return 1;
+            }
+        }
     }
 
     @Override
