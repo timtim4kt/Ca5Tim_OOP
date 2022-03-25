@@ -1,5 +1,7 @@
 package org.example;
 
+import DTOs.Player;
+
 import java.util.*;
 
 public class PlayerManager

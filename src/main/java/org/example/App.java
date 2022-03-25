@@ -1,7 +1,10 @@
 package org.example;
 
+import DTOs.Player;
+
 import java.time.LocalDate;
 import java.util.*;
+import DTOs.Player;
 
 public class App {
     ArrayList<Player> playerList = new ArrayList<>();
