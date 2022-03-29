@@ -56,13 +56,15 @@ displayMainMenu2();
                 + "1. Display All Players\n"
                 + "2. Find Player by ID\n"
                 + "3. Add Player\n"
-                + "4. Exit\n"
-                + "Enter Option [1,4]";
+                + "4. Delete Player\n"
+                + "5. Exit\n"
+                + "Enter Option [1,5]";
 
         final int DISPLAY = 1;
         final int RETRIEVE_OBJECT_BY_ID = 2;
         final int ADD_PLAYER = 3;
-        final int EXIT = 4;
+        final int DELETE_PLAYER = 4;
+        final int EXIT = 5;
 
         Scanner keyboard = new Scanner(System.in);
         int option = 0;
@@ -128,6 +130,21 @@ displayMainMenu2();
                         else{
                             System.out.println("Player not added");
                         }
+                        break;
+                    case DELETE_PLAYER:
+                        System.out.println("Delete option chosen");
+                        System.out.print("Enter Player ID: ");
+                        id = keyboard.nextInt();
+                        keyboard.nextLine();
+                        IUserDao.deletePlayerById(id);
+                        player = IUserDao.findPlayerByPlayerId(id);
+                        if(player!=null){
+                            System.out.println("Player was not deleted");
+                        }
+                        else{
+                            System.out.println("Player was deleted");
+                        }
+
                         break;
                     case EXIT:
                         System.out.println("Exit Menu option chosen");

@@ -255,7 +255,52 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
                 }
             }} catch (SQLException throwables) {
             throwables.printStackTrace();
-        }}}
+        }}
+
+    public void deletePlayerById(int id) throws DaoException
+    {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Player player = null;
+        try
+        {
+            connection = this.getConnection();
+
+            String query = "DELETE FROM players WHERE PLAYER_ID = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, id);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e)
+        {
+            throw new DaoException("deletePlayerById() " + e.getMessage());
+        } finally
+        {
+            try
+            {
+                if (resultSet != null)
+                {
+                    resultSet.close();
+                }
+                if (preparedStatement != null)
+                {
+                    preparedStatement.close();
+                }
+                if (connection != null)
+                {
+                    freeConnection(connection);
+                }
+            } catch (SQLException e)
+            {
+                throw new DaoException("deletePlayerById() " + e.getMessage());
+            }
+        }
+
+    }
+
+}
 
 
 

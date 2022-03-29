@@ -33,5 +33,7 @@ public interface UserDaoInterface
 
     public void addPlayer(int id, String name, String country, LocalDate date, int weight, double height, int appearances, int goals) throws DaoException;
 
+    public void deletePlayerById(int id) throws DaoException;
+
 }
 
