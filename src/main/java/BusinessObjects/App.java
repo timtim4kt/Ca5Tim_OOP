@@ -22,14 +22,17 @@ import DAOs.UserDaoInterface;
 import DTOs.Player;
 import Exceptions.DaoException;
 
+import java.time.LocalDate;
+import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Scanner;
 
 public class App
 {
+    static UserDaoInterface IUserDao = new MySqlUserDao();  //"IUserDao" -> "I" stands for for
+
     public static void main(String[] args)
     {
-        UserDaoInterface IUserDao = new MySqlUserDao();  //"IUserDao" -> "I" stands for for
-
 //        // Notice that the userDao reference is an Interface type.
 //        // This allows for the use of different concrete implementations.
 //        // e.g. we could replace the MySqlUserDao with an OracleUserDao
@@ -44,69 +47,103 @@ public class App
 //        // The Business Objects require that all User DAOs implement
 //        // the interface called "UserDaoInterface", as the code uses
 //        // only references of the interface type to access the DAO methods.
-
-        try
-        {
-            System.out.println("\nCall findAllPlayers()");
-            List<Player> players = IUserDao.findAllPlayers();     // call a method in the DAO
-
-            if( players.isEmpty() )
-                System.out.println("There are no Players");
-            else {
-                for (Player player : players)
-                    System.out.println("Player: " + player.toString());
-            }
-
-            // test dao - with username and password that we know are present in the database
-            System.out.println("\nCall: findPlayerById()");
-            int id = 4;
-            Player player = IUserDao.findPlayerByPlayerId(id);
-
-            if( player != null ) // null returned if userid and password not valid
-                System.out.println("Player found: " + player);
-            else
-                System.out.println("Player with that id not found");
-
-            // test dao - with an invalid username (i.e. not in database)
-            id = 865678;
-            player = IUserDao.findPlayerByPlayerId(id);
-            if(player != null)
-                System.out.println("Player: "  + player + " was found: " );
-            else
-                System.out.println("Player id: " + id + " is not valid");
-
-           /* // test dao - with valid substring
-
-            System.out.println("\nCall: findAllUsersLastNameContains()");
-            String subString = "it";
-            List <User> usersWithSubInLast = IUserDao.findAllUsersLastNameContains(subString);
-
-            if( usersWithSubInLast.isEmpty() )
-                System.out.println("There are no Users with this Substring in their last name");
-            else {
-                for (User user1 : usersWithSubInLast)
-                    System.out.println("User: " + user1.toString());
-            }
-
-            // test dao - with invalid substring
-
-            System.out.println("\nCall: findAllUsersLastNameContains()");
-            subString = "hwuiiu";
-            usersWithSubInLast = IUserDao.findAllUsersLastNameContains(subString);
-
-            if( usersWithSubInLast.isEmpty() )
-                System.out.println("There are no Users with this Substring in their last name");
-            else {
-                for (User user1 : usersWithSubInLast)
-                    System.out.println("User: " + user1.toString());
-            }
-
-            IUserDao.addUser(6,"Paul","Blart","PB","password");*/
-
+displayMainMenu2();
         }
-        catch( DaoException e )
-        {
-            e.printStackTrace();
-        }
+
+
+    private static void displayMainMenu2() {
+        final String MENU_ITEMS = "\n*** MAIN MENU OF OPTIONS PART 2***\n"
+                + "1. Display All Players\n"
+                + "2. Find Player by ID\n"
+                + "3. Add Player\n"
+                + "4. Exit\n"
+                + "Enter Option [1,4]";
+
+        final int DISPLAY = 1;
+        final int RETRIEVE_OBJECT_BY_ID = 2;
+        final int ADD_PLAYER = 3;
+        final int EXIT = 4;
+
+        Scanner keyboard = new Scanner(System.in);
+        int option = 0;
+        do {
+            System.out.println("\n" + MENU_ITEMS);
+            try {
+                String usersInput = keyboard.nextLine();
+                option = Integer.parseInt(usersInput);
+                switch (option) {
+                    case DISPLAY:
+                        System.out.println("All Players");
+                        System.out.println("===========");
+                        List<Player> players = IUserDao.findAllPlayers();     // call a method in the DAO
+                        if( players.isEmpty() )
+                            System.out.println("There are no Players");
+                        else {
+                            for (Player player : players)
+                                System.out.println("Player: " + player.toString());
+                        }
+                        break;
+                    case RETRIEVE_OBJECT_BY_ID:
+                        System.out.println("ID Option Chosen");
+                        System.out.println("=====================");
+                        System.out.println("\nCall: findPlayerById()");
+                        System.out.print("Enter ID: ");
+                        int id = keyboard.nextInt();
+                        keyboard.nextLine();
+                        Player player = IUserDao.findPlayerByPlayerId(id);
+                        System.out.println(player.toString());
+                        break;
+                    case ADD_PLAYER:
+                        System.out.println("Add Player Option Chosen");
+                        System.out.println("========================");
+                        System.out.println("\nCall: addPlayer()");
+                        System.out.print("Enter Player ID: ");
+                        id = keyboard.nextInt();
+                        keyboard.nextLine();
+                        System.out.println("Enter Player Name: ");
+                        String name = keyboard.nextLine();
+                        System.out.println("Enter Player Country: ");
+                        String country = keyboard.nextLine();
+                        System.out.println("Enter Player Birth Year: ");
+                        int year = keyboard.nextInt();
+                        System.out.println("Enter Player Birth Month: ");
+                        int month = keyboard.nextInt();
+                        System.out.println("Enter Player Birth Date: ");
+                        int date = keyboard.nextInt();
+                        System.out.println("Enter Player Weight: ");
+                        LocalDate DOB = LocalDate.of(year,month,date);
+                        int weight = keyboard.nextInt();
+                        System.out.println("Enter Player Height: ");
+                        double height = keyboard.nextDouble();
+                        System.out.println("Enter Player Appearances: ");
+                        int appearances = keyboard.nextInt();
+                        System.out.println("Enter Player Goals: ");
+                        int goals = keyboard.nextInt();
+                        keyboard.nextLine();
+                        IUserDao.addPlayer(id,name,country,DOB,weight,height,appearances,goals);
+                        player = IUserDao.findPlayerByPlayerId(id);
+                        if(player!=null){
+                            System.out.println("Player added :" + player.toString());
+                        }
+                        else{
+                            System.out.println("Player not added");
+                        }
+                        break;
+                    case EXIT:
+                        System.out.println("Exit Menu option chosen");
+                        break;
+                    default:
+                        System.out.print("Invalid input - please enter number in range");
+                        break;
+                }
+
+            } catch (InputMismatchException | NumberFormatException e) {
+                System.out.print("Invalid input - please enter number in range");
+            } catch (DaoException e) {
+                e.printStackTrace();
+            }
+        } while (option != EXIT);
+        System.out.println("\nExiting Main Menu, goodbye.");
     }
+
 }

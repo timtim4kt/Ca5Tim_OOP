@@ -111,7 +111,7 @@ public class App {
     }
 
     private void displayMainMenu() {
-        final String MENU_ITEMS = "\n*** MAIN MENU OF OPTIONS ***\n"
+        final String MENU_ITEMS = "\n*** MAIN MENU OF OPTIONS PART 1***\n"
                 + "1. Display All Players\n"
                 + "2. Find Player by Hash Key\n"
                 + "3. Display Player Tree\n"

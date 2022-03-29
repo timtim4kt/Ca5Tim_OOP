@@ -205,15 +205,15 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
 
 
 
-    /*public void addUser(int id ,String firstname, String lastname, String username,String password) throws DaoException {
+    public void addPlayer(int id, String name, String country, LocalDate date, int weight, double height, int appearances, int goals) throws DaoException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-        User user = null;
+        Player player = null;
         try {
             connection = this.getConnection();
 
-            String query = "INSERT INTO USER VALUES (null,?, ?, ?,?)";
+            String query = "INSERT INTO PLAYERS VALUES (null,?, ?, ?, ?, ?, ?, ?)";
 
             // Try-with-Resources style
 
@@ -228,10 +228,14 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
 //          1 corresponds to first question mark, 2 to the second one, and so on...
 //          As the first field is an Auto-Increment field in the database, we specify a null value for it.
 
-            preparedStatement.setString(1, firstname);
-            preparedStatement.setString(2, lastname);
-            preparedStatement.setString(3, username);
-            preparedStatement.setString(4, password);
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, country);
+            preparedStatement.setObject(3, date);
+            preparedStatement.setInt(4, weight);
+            preparedStatement.setDouble(5, height);
+            preparedStatement.setInt(6, appearances);
+            preparedStatement.setInt(7, goals);
+
 
             preparedStatement.executeUpdate();
 
@@ -247,11 +251,11 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
                         freeConnection(connection);
                     }
                 } catch (SQLException e) {
-                    throw new DaoException("addUser() " + e.getMessage());
+                    throw new DaoException("addPlayer() " + e.getMessage());
                 }
             }} catch (SQLException throwables) {
             throwables.printStackTrace();
-        }}*/}
+        }}}
 
 
 

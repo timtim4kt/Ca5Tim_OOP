@@ -22,6 +22,7 @@ package DAOs;
 import DTOs.Player;
 import Exceptions.DaoException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface UserDaoInterface
@@ -29,6 +30,8 @@ public interface UserDaoInterface
     public List<Player> findAllPlayers() throws DaoException;
 
     public Player findPlayerByPlayerId(int id) throws DaoException;
+
+    public void addPlayer(int id, String name, String country, LocalDate date, int weight, double height, int appearances, int goals) throws DaoException;
 
 }
 
