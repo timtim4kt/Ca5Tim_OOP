@@ -21,6 +21,7 @@ package DAOs;
 
 import DTOs.Player;
 import Exceptions.DaoException;
+import org.example.PlayerGoalsComparator;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,6 +33,8 @@ public interface UserDaoInterface
     public Player findPlayerByPlayerId(int id) throws DaoException;
 
     public void addPlayer(int id, String name, String country, LocalDate date, int weight, double height, int appearances, int goals) throws DaoException;
+
+    List<Player> findAllPlayersGoalsFilter(int g, PlayerGoalsComparator playerGoalsComparator) throws DaoException;
 
     public void deletePlayerById(int id) throws DaoException;
 

@@ -21,6 +21,7 @@ import DAOs.MySqlUserDao;
 import DAOs.UserDaoInterface;
 import DTOs.Player;
 import Exceptions.DaoException;
+import org.example.PlayerGoalsComparator;
 
 import java.time.LocalDate;
 import java.util.InputMismatchException;
@@ -30,6 +31,7 @@ import java.util.Scanner;
 public class App
 {
     static UserDaoInterface IUserDao = new MySqlUserDao();  //"IUserDao" -> "I" stands for for
+    static PlayerGoalsComparator playerGoalsComparator = new PlayerGoalsComparator();
 
     public static void main(String[] args)
     {
@@ -57,14 +59,16 @@ displayMainMenu2();
                 + "2. Find Player by ID\n"
                 + "3. Add Player\n"
                 + "4. Delete Player\n"
-                + "5. Exit\n"
-                + "Enter Option [1,5]";
+                + "5. Filter by Goals\n"
+                + "6. Exit\n"
+                + "Enter Option [1,6]";
 
         final int DISPLAY = 1;
         final int RETRIEVE_OBJECT_BY_ID = 2;
         final int ADD_PLAYER = 3;
         final int DELETE_PLAYER = 4;
-        final int EXIT = 5;
+        final int FILTER_BY_GOALS = 5;
+        final int EXIT = 6;
 
         Scanner keyboard = new Scanner(System.in);
         int option = 0;
@@ -93,7 +97,12 @@ displayMainMenu2();
                         int id = keyboard.nextInt();
                         keyboard.nextLine();
                         Player player = IUserDao.findPlayerByPlayerId(id);
-                        System.out.println(player.toString());
+                        if(player!=null){
+                            System.out.println("Player found: " + player.toString());
+                        }
+                        else{
+                            System.out.println("Player not found");
+                        }
                         break;
                     case ADD_PLAYER:
                         System.out.println("Add Player Option Chosen");
@@ -144,7 +153,28 @@ displayMainMenu2();
                         else{
                             System.out.println("Player was deleted");
                         }
-
+                        break;
+                    case FILTER_BY_GOALS:
+                        System.out.println("Goal Filter Option Chosen");
+                        System.out.println("=========================");
+                        System.out.print("Enter goal amount: ");
+                        goals = keyboard.nextInt();
+                        keyboard.nextLine();
+                        players = IUserDao.findAllPlayersGoalsFilter(goals,playerGoalsComparator);
+                        System.out.println("Players with " + goals + "+ goals");
+                        System.out.println("Name                    Country       DOB          Weight      Height      Appearances    Goals");
+                        System.out.println("====================    ===========   ==========   ========    ========    ===========    =============");
+                        for (Player p : players) {
+                            System.out.printf("%-24s%-14s%-13s%-12s%-12s%-15s%-1s\n",
+                                    p.getName(),
+                                    p.getCountry(),
+                                    p.getDob(),
+                                    p.getWeightKilograms(),
+                                    p.getHeightMetres(),
+                                    p.getCareerAppearances(),
+                                    p.getCareerGoals()
+                            );
+                        }
                         break;
                     case EXIT:
                         System.out.println("Exit Menu option chosen");

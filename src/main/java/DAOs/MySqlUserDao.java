@@ -18,6 +18,8 @@ package DAOs;
 
 import DTOs.Player;
 import Exceptions.DaoException;
+import org.example.PlayerGoalsComparator;
+import org.example.PlayerNameComparator;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,7 +27,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -90,6 +91,7 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
         return playersList;     // may be empty
     }
 
+    @Override
     public Player findPlayerByPlayerId(int id) throws DaoException
     {
         Connection connection = null;
@@ -204,7 +206,7 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
 
 
 
-
+    @Override
     public void addPlayer(int id, String name, String country, LocalDate date, int weight, double height, int appearances, int goals) throws DaoException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -257,6 +259,67 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
             throwables.printStackTrace();
         }}
 
+    @Override
+    public List<Player> findAllPlayersGoalsFilter(int g, PlayerGoalsComparator playerGoalsComparator) throws DaoException
+    {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        ResultSet resultSet = null;
+        List<Player> playersList = new ArrayList<>();
+
+        try
+        {
+            //Get connection object using the methods in the super class (MySqlDao.java)...
+            connection = this.getConnection();
+
+            String query = "SELECT * FROM players WHERE GOALS > ?";
+            ps = connection.prepareStatement(query);
+            ps.setInt(1, g);
+
+            //Using a PreparedStatement to execute SQL...
+            resultSet = ps.executeQuery();
+            while (resultSet.next())
+            {
+                int playerId = resultSet.getInt("PLAYER_ID");
+                String name = resultSet.getString("PLAYER_NAME");
+                String country = resultSet.getString("COUNTRY");
+                LocalDate date = resultSet.getDate("DOB").toLocalDate();
+                int weight = resultSet.getInt("WEIGHTKG");
+                double height = resultSet.getDouble("HEIGHTM");
+                int appearances = resultSet.getInt("APPEARANCES");
+                int goals = resultSet.getInt("GOALS");
+                Player p = new Player(name,country,date,weight,height,appearances,goals);
+                playersList.add(p);
+            }
+            playersList.sort(playerGoalsComparator);
+        } catch (SQLException e)
+        {
+            throw new DaoException("findAllPlayersGoalsFilterResultSet() " + e.getMessage());
+        } finally
+        {
+            try
+            {
+                if (resultSet != null)
+                {
+                    resultSet.close();
+                }
+                if (ps != null)
+                {
+                    ps.close();
+                }
+                if (connection != null)
+                {
+                    freeConnection(connection);
+                }
+            } catch (SQLException e)
+            {
+                throw new DaoException("findAllPlayersGoalsFilter() " + e.getMessage());
+            }
+        }
+        return playersList;     // may be empty
+    }
+
+    @Override
     public void deletePlayerById(int id) throws DaoException
     {
         Connection connection = null;
