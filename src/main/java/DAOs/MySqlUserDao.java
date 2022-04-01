@@ -19,8 +19,7 @@ package DAOs;
 import DTOs.Player;
 import Exceptions.DaoException;
 import org.example.PlayerGoalsComparator;
-import org.example.PlayerNameComparator;
-
+import com.google.gson.Gson;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -92,6 +91,66 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
     }
 
     @Override
+    public String findAllPlayersJson() throws DaoException
+    {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        ResultSet resultSet = null;
+        List<Player> playersList = new ArrayList<>();
+
+        try
+        {
+            //Get connection object using the methods in the super class (MySqlDao.java)...
+            connection = this.getConnection();
+
+            String query = "SELECT * FROM players";
+            ps = connection.prepareStatement(query);
+
+            //Using a PreparedStatement to execute SQL...
+            resultSet = ps.executeQuery();
+            while (resultSet.next())
+            {
+                int playerId = resultSet.getInt("PLAYER_ID");
+                String name = resultSet.getString("PLAYER_NAME");
+                String country = resultSet.getString("COUNTRY");
+                LocalDate date = resultSet.getDate("DOB").toLocalDate();
+                int weight = resultSet.getInt("WEIGHTKG");
+                double height = resultSet.getDouble("HEIGHTM");
+                int appearances = resultSet.getInt("APPEARANCES");
+                int goals = resultSet.getInt("GOALS");
+                Player p = new Player(name,country,date,weight,height,appearances,goals);
+                playersList.add(p);
+            }
+        } catch (SQLException e)
+        {
+            throw new DaoException("findAllPlayersJsonResultSet() " + e.getMessage());
+        } finally
+        {
+            try
+            {
+                if (resultSet != null)
+                {
+                    resultSet.close();
+                }
+                if (ps != null)
+                {
+                    ps.close();
+                }
+                if (connection != null)
+                {
+                    freeConnection(connection);
+                }
+            } catch (SQLException e)
+            {
+                throw new DaoException("findAllPlayersJson() " + e.getMessage());
+            }
+        }
+        Gson gsonParser = new Gson();
+        String playerJson = gsonParser.toJson(playersList);
+        return playerJson;     // may be empty
+    }
+
+    @Override
     public Player findPlayerByPlayerId(int id) throws DaoException
     {
         Connection connection = null;
@@ -145,6 +204,64 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
             }
         }
         return player;     // reference to User object, or null value
+    }
+
+    @Override
+    public String findPlayerByPlayerIdJson(int id) throws DaoException
+    {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Player player = null;
+        try
+        {
+            connection = this.getConnection();
+
+            String query = "SELECT * FROM players WHERE PLAYER_ID = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, id);
+
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next())
+            {
+                int playerId = resultSet.getInt("PLAYER_ID");
+                String name = resultSet.getString("PLAYER_NAME");
+                String country = resultSet.getString("COUNTRY");
+                LocalDate date = resultSet.getDate("DOB").toLocalDate();
+                int weight = resultSet.getInt("WEIGHTKG");
+                double height = resultSet.getDouble("HEIGHTM");
+                int appearances = resultSet.getInt("APPEARANCES");
+                int goals = resultSet.getInt("GOALS");
+
+                player = new Player(name,country,date,weight,height,appearances,goals);
+            }
+        } catch (SQLException e)
+        {
+            throw new DaoException("findPlayerById() " + e.getMessage());
+        } finally
+        {
+            try
+            {
+                if (resultSet != null)
+                {
+                    resultSet.close();
+                }
+                if (preparedStatement != null)
+                {
+                    preparedStatement.close();
+                }
+                if (connection != null)
+                {
+                    freeConnection(connection);
+                }
+            } catch (SQLException e)
+            {
+                throw new DaoException("findPlayerById() " + e.getMessage());
+            }
+        }
+        Gson gsonParser = new Gson();
+        String playerJson = gsonParser.toJson(player);
+        return playerJson;
     }
 
     /*@Override

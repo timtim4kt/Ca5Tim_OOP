@@ -60,15 +60,19 @@ displayMainMenu2();
                 + "3. Add Player\n"
                 + "4. Delete Player\n"
                 + "5. Filter by Goals\n"
-                + "6. Exit\n"
-                + "Enter Option [1,6]";
+                + "6. Display All Players(Json)\n"
+                + "7. Find Player by ID(Json)\n"
+                + "8. Exit\n"
+                + "Enter Option [1,8]";
 
         final int DISPLAY = 1;
         final int RETRIEVE_OBJECT_BY_ID = 2;
         final int ADD_PLAYER = 3;
         final int DELETE_PLAYER = 4;
         final int FILTER_BY_GOALS = 5;
-        final int EXIT = 6;
+        final int DISPLAY_JSON = 6;
+        final int RETRIEVE_OBJECT_BY_ID_JSON = 7;
+        final int EXIT = 8;
 
         Scanner keyboard = new Scanner(System.in);
         int option = 0;
@@ -174,6 +178,27 @@ displayMainMenu2();
                                     p.getCareerAppearances(),
                                     p.getCareerGoals()
                             );
+                        }
+                        break;
+                    case DISPLAY_JSON:
+                        System.out.println("All Players");
+                        System.out.println("===========");
+                        System.out.println("Display(Json) option chosen");
+                        String json = IUserDao.findAllPlayersJson();
+                        System.out.println(json);
+                        break;
+                    case RETRIEVE_OBJECT_BY_ID_JSON:
+                        System.out.println("ID(json) Option Chosen");
+                        System.out.println("\nCall: findPlayerById()");
+                        System.out.print("Enter ID: ");
+                        id = keyboard.nextInt();
+                        keyboard.nextLine();
+                        String p = IUserDao.findPlayerByPlayerIdJson(id);
+                        if(p!=null){
+                            System.out.println("Player found: " + p);
+                        }
+                        else{
+                            System.out.println("Player not found");
                         }
                         break;
                     case EXIT:
