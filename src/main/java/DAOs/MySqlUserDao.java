@@ -18,6 +18,8 @@ package DAOs;
 
 import DTOs.Player;
 import Exceptions.DaoException;
+import com.fatboyindustrial.gsonjavatime.Converters;
+import com.google.gson.GsonBuilder;
 import org.example.PlayerGoalsComparator;
 import com.google.gson.Gson;
 import java.sql.Connection;
@@ -145,7 +147,8 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
                 throw new DaoException("findAllPlayersJson() " + e.getMessage());
             }
         }
-        Gson gsonParser = new Gson();
+        Gson gsonParser =  Converters.registerLocalDate(new GsonBuilder()).create();
+
         String playerJson = gsonParser.toJson(playersList);
         return playerJson;     // may be empty
     }
@@ -259,7 +262,7 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
                 throw new DaoException("findPlayerById() " + e.getMessage());
             }
         }
-        Gson gsonParser = new Gson();
+        Gson gsonParser =  Converters.registerLocalDate(new GsonBuilder()).create();
         String playerJson = gsonParser.toJson(player);
         return playerJson;
     }

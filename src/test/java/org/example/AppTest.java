@@ -1,8 +1,14 @@
 package org.example;
 
-import static org.junit.Assert.assertTrue;
+import DAOs.MySqlUserDao;
+import DTOs.Player;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+
 
 /**
  * Unit test for simple App.
@@ -13,8 +19,8 @@ public class AppTest
      * Rigorous Test :-)
      */
     @Test
-    public void shouldAnswerWithTrue()
-    {
-        assertTrue( true );
+    void filterByGoalsTest(){
+
+
     }
 }
