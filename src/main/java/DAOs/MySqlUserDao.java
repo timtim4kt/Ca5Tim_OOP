@@ -154,6 +154,67 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
     }
 
     @Override
+    public String findAllPlayersJsonServer() throws DaoException
+    {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        ResultSet resultSet = null;
+        List<Player> playersList = new ArrayList<>();
+
+        try
+        {
+            //Get connection object using the methods in the super class (MySqlDao.java)...
+            connection = this.getConnection();
+
+            String query = "SELECT * FROM players";
+            ps = connection.prepareStatement(query);
+
+            //Using a PreparedStatement to execute SQL...
+            resultSet = ps.executeQuery();
+            while (resultSet.next())
+            {
+                int playerId = resultSet.getInt("PLAYER_ID");
+                String name = resultSet.getString("PLAYER_NAME");
+                String country = resultSet.getString("COUNTRY");
+                LocalDate date = resultSet.getDate("DOB").toLocalDate();
+                int weight = resultSet.getInt("WEIGHTKG");
+                double height = resultSet.getDouble("HEIGHTM");
+                int appearances = resultSet.getInt("APPEARANCES");
+                int goals = resultSet.getInt("GOALS");
+                Player p = new Player(name,country,date,weight,height,appearances,goals);
+                playersList.add(p);
+            }
+        } catch (SQLException e)
+        {
+            throw new DaoException("findAllPlayersJsonResultSet() " + e.getMessage());
+        } finally
+        {
+            try
+            {
+                if (resultSet != null)
+                {
+                    resultSet.close();
+                }
+                if (ps != null)
+                {
+                    ps.close();
+                }
+                if (connection != null)
+                {
+                    freeConnection(connection);
+                }
+            } catch (SQLException e)
+            {
+                throw new DaoException("findAllPlayersJson() " + e.getMessage());
+            }
+        }
+        Gson gsonParser =  Converters.registerLocalDate(new GsonBuilder()).create();
+
+        String playerJson = gsonParser.toJson(playersList);
+        return playerJson;     // may be empty
+    }
+
+    @Override
     public Player findPlayerByPlayerId(int id) throws DaoException
     {
         Connection connection = null;
@@ -185,6 +246,62 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
         } catch (SQLException e)
         {
             throw new DaoException("findPlayerById() " + e.getMessage());
+        } finally
+        {
+            try
+            {
+                if (resultSet != null)
+                {
+                    resultSet.close();
+                }
+                if (preparedStatement != null)
+                {
+                    preparedStatement.close();
+                }
+                if (connection != null)
+                {
+                    freeConnection(connection);
+                }
+            } catch (SQLException e)
+            {
+                throw new DaoException("findPlayerById() " + e.getMessage());
+            }
+        }
+        return player;     // reference to User object, or null value
+    }
+
+    @Override
+    public Player findPlayerByPlayerName(String name) throws DaoException
+    {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Player player = null;
+        try
+        {
+            connection = this.getConnection();
+
+            String query = "SELECT * FROM players WHERE PLAYER_NAME = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, name);
+
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next())
+            {
+                int playerId = resultSet.getInt("PLAYER_ID");
+                String playerName = resultSet.getString("PLAYER_NAME");
+                String country = resultSet.getString("COUNTRY");
+                LocalDate date = resultSet.getDate("DOB").toLocalDate();
+                int weight = resultSet.getInt("WEIGHTKG");
+                double height = resultSet.getDouble("HEIGHTM");
+                int appearances = resultSet.getInt("APPEARANCES");
+                int goals = resultSet.getInt("GOALS");
+
+                player = new Player(playerName,country,date,weight,height,appearances,goals);
+            }
+        } catch (SQLException e)
+        {
+            throw new DaoException("findPlayerByName() " + e.getMessage());
         } finally
         {
             try
@@ -266,6 +383,68 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
         String playerJson = gsonParser.toJson(player);
         return playerJson;
     }
+
+    @Override
+    public String findPlayerByPlayerIdJsonServer(int id) throws DaoException
+    {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Player player = null;
+        try
+        {
+            connection = this.getConnection();
+
+            String query = "SELECT * FROM players WHERE PLAYER_ID = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, id);
+
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next())
+            {
+                int playerId = resultSet.getInt("PLAYER_ID");
+                String name = resultSet.getString("PLAYER_NAME");
+                String country = resultSet.getString("COUNTRY");
+                LocalDate date = resultSet.getDate("DOB").toLocalDate();
+                int weight = resultSet.getInt("WEIGHTKG");
+                double height = resultSet.getDouble("HEIGHTM");
+                int appearances = resultSet.getInt("APPEARANCES");
+                int goals = resultSet.getInt("GOALS");
+
+                player = new Player(name,country,date,weight,height,appearances,goals);
+            }
+        } catch (SQLException e)
+        {
+            throw new DaoException("findPlayerById() " + e.getMessage());
+        } finally
+        {
+            try
+            {
+                if (resultSet != null)
+                {
+                    resultSet.close();
+                }
+                if (preparedStatement != null)
+                {
+                    preparedStatement.close();
+                }
+                if (connection != null)
+                {
+                    freeConnection(connection);
+                }
+            } catch (SQLException e)
+            {
+                throw new DaoException("findPlayerById() " + e.getMessage());
+            }
+        }
+        Gson gsonParser =  Converters.registerLocalDate(new GsonBuilder()).create();
+        String playerJson = gsonParser.toJson(player);
+        return playerJson;
+    }
+
+
+
+
 
     /*@Override
     public List<User> findAllUsersLastNameContains( String subString ) throws DaoException
@@ -353,7 +532,7 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, country);
             preparedStatement.setObject(3, date);
-            preparedStatement.setInt(4, weight);
+            preparedStatement.setDouble(4, weight);
             preparedStatement.setDouble(5, height);
             preparedStatement.setInt(6, appearances);
             preparedStatement.setInt(7, goals);
@@ -437,6 +616,69 @@ public class MySqlUserDao extends MySqlDao implements UserDaoInterface
             }
         }
         return playersList;     // may be empty
+    }
+
+    @Override
+    public String findAllPlayersGoalsFilterServer(int g, PlayerGoalsComparator playerGoalsComparator) throws DaoException
+    {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        ResultSet resultSet = null;
+        List<Player> playersList = new ArrayList<>();
+
+        try
+        {
+            //Get connection object using the methods in the super class (MySqlDao.java)...
+            connection = this.getConnection();
+
+            String query = "SELECT * FROM players WHERE GOALS > ?";
+            ps = connection.prepareStatement(query);
+            ps.setInt(1, g);
+
+            //Using a PreparedStatement to execute SQL...
+            resultSet = ps.executeQuery();
+            while (resultSet.next())
+            {
+                int playerId = resultSet.getInt("PLAYER_ID");
+                String name = resultSet.getString("PLAYER_NAME");
+                String country = resultSet.getString("COUNTRY");
+                LocalDate date = resultSet.getDate("DOB").toLocalDate();
+                int weight = resultSet.getInt("WEIGHTKG");
+                double height = resultSet.getDouble("HEIGHTM");
+                int appearances = resultSet.getInt("APPEARANCES");
+                int goals = resultSet.getInt("GOALS");
+                Player p = new Player(name,country,date,weight,height,appearances,goals);
+                playersList.add(p);
+            }
+            playersList.sort(playerGoalsComparator);
+        } catch (SQLException e)
+        {
+            throw new DaoException("findAllPlayersGoalsFilterResultSet() " + e.getMessage());
+        } finally
+        {
+            try
+            {
+                if (resultSet != null)
+                {
+                    resultSet.close();
+                }
+                if (ps != null)
+                {
+                    ps.close();
+                }
+                if (connection != null)
+                {
+                    freeConnection(connection);
+                }
+            } catch (SQLException e)
+            {
+                throw new DaoException("findAllPlayersGoalsFilter() " + e.getMessage());
+            }
+        }
+        Gson gsonParser =  Converters.registerLocalDate(new GsonBuilder()).create();
+
+        String playerJson = gsonParser.toJson(playersList);
+        return playerJson;
     }
 
     @Override

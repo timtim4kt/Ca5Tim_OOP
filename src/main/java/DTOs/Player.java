@@ -6,6 +6,9 @@ import java.util.Objects;
 public class Player implements Comparable<Player>{
 
 
+    //public Player(String name, String country, String year, String month, String date, String weight, String height, String appearances, String goals) {
+    //}
+
     public String getName() {
         return name;
     }
@@ -81,11 +84,11 @@ public class Player implements Comparable<Player>{
         this.dob = dob;
     }
 
-    public double getWeightKilograms() {
+    public int getWeightKilograms() {
         return weightKilograms;
     }
 
-    public void setWeightKilograms(double weightKilograms) {
+    public void setWeightKilograms(int weightKilograms) {
         this.weightKilograms = weightKilograms;
     }
 
@@ -113,7 +116,7 @@ public class Player implements Comparable<Player>{
         this.careerGoals = careerGoals;
     }
 
-    public Player(String name, String country, LocalDate dob, double weightKilograms, double heightMetres, int careerAppearances, int careerGoals) {
+    public Player(String name, String country, LocalDate dob, int weightKilograms, double heightMetres, int careerAppearances, int careerGoals) {
         this.name = name;
         this.country = country;
         this.dob = dob;
@@ -126,7 +129,7 @@ public class Player implements Comparable<Player>{
     private String name;
     private String country;
     private LocalDate dob;
-    private double weightKilograms;
+    private int weightKilograms;
     private double heightMetres;
     private int careerAppearances;
     private int careerGoals;

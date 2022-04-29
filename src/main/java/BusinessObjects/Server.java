@@ -36,6 +36,9 @@ import DAOs.MySqlUserDao;
 import DAOs.UserDaoInterface;
 import DTOs.Player;
 import Exceptions.DaoException;
+import com.fatboyindustrial.gsonjavatime.Converters;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.example.PlayerGoalsComparator;
 
 import java.io.BufferedReader;
@@ -54,6 +57,7 @@ public class Server
 
     public UserDaoInterface IUserDao = new MySqlUserDao();
     PlayerGoalsComparator playerGoalsComparator = new PlayerGoalsComparator();
+    Gson gsonParser =  Converters.registerLocalDate(new GsonBuilder()).create();
 
     public static void main(String[] args)
     {
@@ -138,31 +142,28 @@ public class Server
                     {
                         String[] tokens = message.split(" ");
                         int id = Integer.parseInt(tokens[1]);
-                        Player player = IUserDao.findPlayerByPlayerId(id);
+                        String player = IUserDao.findPlayerByPlayerIdJsonServer(id);
                         socketWriter.println(player);
                     }
                     else if(message.startsWith("DisplayAllPlayers"))
                     {
-                        List playerList = IUserDao.findAllPlayers();
+                        String playerList = IUserDao.findAllPlayersJsonServer();
                         socketWriter.println(playerList);
                     }
-                    else if(message.startsWith("Add"))
+                    else if(message.startsWith("add"))
                     {
-                        String[] tokens = message.split(" ");
-                        int id = Integer.parseInt(tokens[1]);
-                        String name = (tokens[2]);
-                        String country = (tokens[3]);
-                        int year  = Integer.parseInt(tokens[4]);
-                        int month = Integer.parseInt(tokens[5]);
-                        int date = Integer.parseInt(tokens[6]);
-                        int weight = Integer.parseInt(tokens[7]);
-                        double height = Double.parseDouble(tokens[8]);
-                        int appearances = Integer.parseInt(tokens[9]);
-                        int goals = Integer.parseInt(tokens[10]);
-                        LocalDate bDate = LocalDate.of(year,month,date);
-                        IUserDao.addPlayer(id,name,country,bDate,weight,height,appearances,goals);
-                        Player p = IUserDao.findPlayerByPlayerId(id);
-                        socketWriter.println("Player added: " + p);
+                        String jsonString = message.substring(4);
+                        System.out.println(jsonString);
+                        Player p = gsonParser.fromJson(jsonString, Player.class);
+                        System.out.println(p);
+                        IUserDao.addPlayer(1,p.getName(),p.getCountry(),p.getDob(),p.getWeightKilograms(),p.getHeightMetres(),p.getCareerAppearances(),p.getCareerGoals());
+                        if(IUserDao.findPlayerByPlayerName(p.getName()) != null){
+                            socketWriter.println("Player added: " + IUserDao.findPlayerByPlayerName(p.getName()));
+                        }
+                        else
+                        {
+                            socketWriter.println("Player not added");
+                        }
                     }
                     else if (message.startsWith("DeletePlayerById"))
                     {
@@ -183,8 +184,8 @@ public class Server
                     {
                         String[] tokens = message.split(" ");
                         int goals = Integer.parseInt(tokens[1]);
-                        List pList = IUserDao.findAllPlayersGoalsFilter(goals,playerGoalsComparator);
-                        if(pList.size() > 0){
+                        String pList = IUserDao.findAllPlayersGoalsFilterServer(goals,playerGoalsComparator);
+                        if(pList != null){
                             socketWriter.println(pList);
                         }
                         else

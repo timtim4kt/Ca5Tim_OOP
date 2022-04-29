@@ -17,12 +17,16 @@ package BusinessObjects;
  * NOte: You must run the server before running this the client.
  * (Both the server and the client will be running together on this computer)
  */
-
-
+import DTOs.Player;
+import com.fatboyindustrial.gsonjavatime.Converters;
+import com.google.gson.GsonBuilder;
+import org.example.PlayerGoalsComparator;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.time.LocalDate;
 import java.util.Scanner;
 
 public class Client
@@ -35,6 +39,7 @@ public class Client
 
     public void start()
     {
+        Gson gsonParser =  Converters.registerLocalDate(new GsonBuilder()).create();
         Scanner in = new Scanner(System.in);
         try {
             Socket socket = new Socket("localhost", 8080);  // connect to server socket
@@ -71,13 +76,28 @@ public class Client
                     String id = in.nextLine();
                     socketWriter.println("DisplayPlayerById " + id);
                     String input = socketReader.nextLine();
-                    System.out.println("Client message: Response from server: \"" + input + "\"");
+                    Player p = gsonParser.fromJson(input, Player.class);
+                    if(p!=null) {
+                        System.out.printf("%-24s%-14s%-13s%-12s%-12s%-15s%-1s\n",
+                                p.getName(),
+                                p.getCountry(),
+                                p.getDob(),
+                                p.getWeightKilograms(),
+                                p.getHeightMetres(),
+                                p.getCareerAppearances(),
+                                p.getCareerGoals());
+                    }
+                    else{
+                        System.out.println("Player not found");
+                    }
                 }
                 else if(command.equalsIgnoreCase("2"))
                 {
                     socketWriter.println("DisplayAllPlayers");
                     String input = socketReader.nextLine();
-                    System.out.println("Client message: Response from server: \"" + input + "\"");
+                    Player[] players = gsonParser.fromJson(input, Player[].class);
+
+                    displayAllPlayers(players);
                 }
                 else if(command.equalsIgnoreCase("3"))
                 {
@@ -101,8 +121,14 @@ public class Client
                     String appearances = in.nextLine();
                     System.out.println("Enter Goals: ");
                     String goals = in.nextLine();
-
-                    socketWriter.println("Add " + id + " " + name + " " + country + " " + year + " " + month + " " + date + " " + weight + " " + height + " " + appearances + " " + goals);
+                    int pYear = Integer.parseInt(year);
+                    int pMonth = Integer.parseInt(month);
+                    int pDay = Integer.parseInt(date);
+                    LocalDate dob = LocalDate.of(pYear,pMonth,pDay);
+                    Player newP = new Player(name,country,dob,Integer.parseInt(weight),Double.parseDouble(height),Integer.parseInt(appearances),Integer.parseInt(goals));
+                    String newPlayer = gsonParser.toJson(newP);
+                    command = "add" + " " + newPlayer;
+                    socketWriter.println(command);
                     String input = socketReader.nextLine();
                     System.out.println("Client message: Response from server: \"" + input + "\"");
                 }
@@ -120,7 +146,8 @@ public class Client
                     String goals = in.nextLine();
                     socketWriter.println("FilterByGoals " + goals);
                     String input = socketReader.nextLine();
-                    System.out.println("Client message: Response from server: \"" + input + "\"");
+                    Player[] filteredPlayers = gsonParser.fromJson(input, Player[].class);
+                    displayAllPlayers(filteredPlayers);
                 }
                 else{
                     continueLooping = false;
@@ -148,6 +175,19 @@ public class Client
 
         } catch (IOException e) {
             System.out.println("Client message: IOException: "+e);
+        }
+    }
+
+    public static void displayAllPlayers(Player[] players) {
+        for(Player p: players) {
+            System.out.printf("%-24s%-14s%-13s%-12s%-12s%-15s%-1s\n",
+                    p.getName(),
+                    p.getCountry(),
+                    p.getDob(),
+                    p.getWeightKilograms(),
+                    p.getHeightMetres(),
+                    p.getCareerAppearances(),
+                    p.getCareerGoals());
         }
     }
 }
